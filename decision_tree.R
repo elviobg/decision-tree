@@ -21,24 +21,35 @@ gain <- function(entropy, data, labels) {
   return(g)
 }
 
-define_node <- function(data, labels) {
-  
-  t <- length(which(labels== 'TRUE'))
-  f <- length(which(labels== 'FALSE'))
-  eS = entropy(f, t)
-  cat("entropia base: ", eS, "\n")
+define_node <- function(eS, data, labels) {
+  #cat("entropia base: ", eS, "\n")
   g <- c()
   
   for (col in data) {
     cg <- gain(eS, col, labels)
     g <- c(g, cg)
   }
-  
-  print(g)
-  print(max(g))
-  print(which.max(g))
-  print(colnames(data[which.max(g)]))
   return(which.max(g))
+}
+
+id3 <- function(data, labels) {
+  t <- length(which(labels== 'TRUE'))
+  f <- length(which(labels== 'FALSE'))
+  eS = entropy(f, t)
+  
+  if(eS > 0){
+    root <- define_node(eS, data, labels)
+    cat('root: ', colnames(data[root]),'\n')
+    for (level in levels(data[,root])) {
+      l <- which(data[,root] == level)
+      data2 <- subset(data, data[,root] == level)
+      label2 <- labels[l]
+      cat(level, '\n')
+      id3(data2, label2)
+    }
+  }else{
+    print(labels[1])
+  }
 }
 
 get_data <- function() {
