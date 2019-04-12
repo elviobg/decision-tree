@@ -32,39 +32,38 @@ define_node <- function(eS, data, labels) {
   return(which.max(g))
 }
 
-id3 <- function(data, labels) {
+id3 <- function(data, labels, print_level) {
   t <- length(which(labels== 'TRUE'))
   f <- length(which(labels== 'FALSE'))
   eS = entropy(f, t)
-  
+  for(i in 0:print_level){cat('  ')}
   if(eS > 0){
     root <- define_node(eS, data, labels)
-    cat('root: ', colnames(data[root]),'\n')
+    cat(colnames(data[root]),'\n')
+    print_level = print_level + 1
     for (level in levels(data[,root])) {
       l <- which(data[,root] == level)
       data2 <- subset(data, data[,root] == level)
       label2 <- labels[l]
+      
+      for(i in 0:print_level){cat('  ')}
       cat(level, '\n')
-      id3(data2, label2)
+      
+      id3(data2, label2, print_level+1)
     }
   }else{
-    print(labels[1])
+    cat(labels[1], "\n")
   }
 }
 
 get_data <- function() {
-  #0.94
-  tempo = c('e','e','n','c','c','c','n','e','e','c','e','n','n','c');
-  #0.247
-  temperatura = c('q','q','q','m','f','f','f','m','f','m','m','m','q','m');
-  #0.029
-  umidade = c('a','a','a','a','n','n','n','a','n','n','n','a','n','a');
-  #0.985
-  vento = c('-','+','-','-','-','+','+','-','-','-','+','+','-','+');
-  #0.048
+  tempo = c('ensolarado','ensolarado','nublado','chuva','chuva','chuva','nublado','ensolarado','ensolarado','chuva','ensolarado','nublado','nublado','chuva');
+  temperatura = c('quente','quente','quente','moderado','frio','frio','frio','moderado','frio','moderado','moderado','moderado','quente','moderado')
+  umidade = c('alta','alta','alta','alta','normal','normal','normal','alta','normal','normal','normal','alta','normal','alta')
+  vento = c('fraco','forte','fraco','fraco','fraco','forte','forte','fraco','fraco','fraco','forte','forte','fraco','forte')
   data.frame(tempo, temperatura, umidade, vento)
 }
 
-get_label <- function() {
-  c(FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE);
+get_labels <- function() {
+  c('FALSE', 'FALSE', 'TRUE', 'TRUE', 'TRUE', 'FALSE', 'TRUE', 'FALSE', 'TRUE', 'TRUE', 'TRUE', 'TRUE', 'TRUE', 'FALSE')
 }
