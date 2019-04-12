@@ -1,6 +1,9 @@
 entropy <- function(nPositive, nNegative) {
-  t = nPositive+nNegative;
-  -nPositive/t * log2(nPositive/t) -nNegative/t * log2(nNegative/t);
+  t = nPositive+nNegative
+  e = -nPositive/t * log2(nPositive/t) -nNegative/t * log2(nNegative/t)
+  if (is.nan(e))
+    return(0)
+  return(e)
 }
 
 gain <- function(entropy, data, labels) {
@@ -16,6 +19,26 @@ gain <- function(entropy, data, labels) {
     g = g - entropy(length(f), length(t)) * (length(f) + length(t)) / s
   }
   return(g)
+}
+
+define_node <- function(data, labels) {
+  
+  t <- length(which(labels== 'TRUE'))
+  f <- length(which(labels== 'FALSE'))
+  eS = entropy(f, t)
+  cat("entropia base: ", eS, "\n")
+  g <- c()
+  
+  for (col in data) {
+    cg <- gain(eS, col, labels)
+    g <- c(g, cg)
+  }
+  
+  print(g)
+  print(max(g))
+  print(which.max(g))
+  print(colnames(data[which.max(g)]))
+  return(which.max(g))
 }
 
 get_data <- function() {
